@@ -51,7 +51,7 @@ jobs:
       - name: Check if tag already exists on Docker Hub
         run: |
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            https://hub.docker.com/v2/repositories/${{ secrets.DOCKERHUB_USERNAME }}/why-is-it-green-web/tags/${TAG})
+            https://hub.docker.com/v2/repositories/${{ secrets.DOCKERHUB_USERNAME }}/why-is-it-green-api/tags/${TAG})
 
           if [ "$STATUS" -eq 200 ]; then
             echo "Tag ${TAG} already exists on Docker Hub - Failing."
@@ -80,7 +80,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/why-is-it-green-web:${{ env.TAG }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/why-is-it-green-api:${{ env.TAG }}
           build-args: |
             GIT_SHA=${{ env.SHORT_SHA }}
             BUILD_NUMBER=${{ github.run_number }}
