@@ -1,5 +1,5 @@
 pub async fn health() -> &'static str {
-    "ok"
+    "Service is up and running"
 }
 
 #[cfg(test)]
