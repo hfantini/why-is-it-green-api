@@ -27,5 +27,5 @@ async fn should_return_ok_on_healthcheck_endpoint() {
         .expect("response body should be readable")
         .to_bytes();
 
-    assert_eq!(body.as_ref(), b"ok");
+    assert_eq!(body.as_ref(), b"Service is up and running");
 }
