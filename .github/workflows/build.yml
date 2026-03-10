@@ -1,0 +1,87 @@
+name: Build
+
+on:
+  pull_request:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure tag commit is on allowed branch
+        run: |
+          git fetch --all
+
+          if git branch -r --contains $GITHUB_SHA | grep -E 'origin/(main|release/)' ; then
+            echo "Tag commit is on an allowed branch."
+          else
+            echo "Tag commit is NOT on main or release/* - Failing."
+            exit 1
+          fi
+
+      - name: Extract version from tag
+        run: |
+          TAG=${GITHUB_REF_NAME}
+          VERSION_FROM_TAG=${TAG#v}
+
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "VERSION_FROM_TAG=$VERSION_FROM_TAG" >> $GITHUB_ENV
+
+          echo "Extracted tag: $TAG"
+          echo "Version from tag: $VERSION_FROM_TAG"
+
+      - name: Check if tag version matches Cargo.toml
+        run: |
+          VERSION_FROM_CARGO=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "why-is-it-green-api") | .version')
+
+          echo "Version from Cargo.toml: $VERSION_FROM_CARGO"
+
+          if [ "$VERSION_FROM_TAG" != "$VERSION_FROM_CARGO" ]; then
+            echo "Tag version ($VERSION_FROM_TAG) does not match Cargo.toml version ($VERSION_FROM_CARGO) - Failing."
+            exit 1
+          fi
+
+      - name: Check if tag already exists on Docker Hub
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            https://hub.docker.com/v2/repositories/${{ secrets.DOCKERHUB_USERNAME }}/why-is-it-green-web/tags/${TAG})
+
+          if [ "$STATUS" -eq 200 ]; then
+            echo "Tag ${TAG} already exists on Docker Hub - Failing."
+            exit 1
+          fi
+
+      # From here only builds if the tag on docker hub does not exists
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Generate short SHA
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+          echo "Short SHA: $SHORT_SHA"
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/why-is-it-green-web:${{ env.TAG }}
+          build-args: |
+            GIT_SHA=${{ env.SHORT_SHA }}
+            BUILD_NUMBER=${{ github.run_number }}
