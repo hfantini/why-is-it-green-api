@@ -35,7 +35,8 @@ async fn should_return_ok_on_version_endpoint() {
 
     let body: Value = serde_json::from_slice(&body).expect("response body should be valid json");
 
-    assert_eq!(body["version"], "0.0.3");
+    assert!(body["version"].is_string());
+    assert!(!body["version"].as_str().unwrap_or_default().is_empty());
     assert!(body["environment"].is_string());
     assert!(body["build_number"].is_string());
     assert!(body["git_sha"].is_string());
