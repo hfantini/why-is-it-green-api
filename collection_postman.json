@@ -1,0 +1,53 @@
+{
+  "info": {
+    "_postman_id": "5d0e3c1a-4cc7-4d41-a9f3-why-is-it-green-api",
+    "name": "why-is-it-green-api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for the why-is-it-green Rust API"
+  },
+  "item": [
+    {
+      "name": "Healthcheck",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/healthcheck",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "healthcheck"
+          ]
+        },
+        "description": "Infrastructure health check endpoint."
+      },
+      "response": []
+    },
+    {
+      "name": "Version",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/version",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "version"
+          ]
+        },
+        "description": "Application version metadata endpoint."
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}
