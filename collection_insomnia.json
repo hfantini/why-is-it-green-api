@@ -1,0 +1,56 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-03-12T00:00:00.000Z",
+  "__export_source": "codex",
+  "resources": [
+    {
+      "_id": "wrk_why_is_it_green_api",
+      "_type": "workspace",
+      "name": "why-is-it-green-api",
+      "description": "Insomnia collection for the why-is-it-green Rust API",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_why_is_it_green_api_base",
+      "_type": "environment",
+      "parentId": "wrk_why_is_it_green_api",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:3000"
+      }
+    },
+    {
+      "_id": "fld_health_and_version",
+      "_type": "request_group",
+      "parentId": "wrk_why_is_it_green_api",
+      "name": "API"
+    },
+    {
+      "_id": "req_healthcheck",
+      "_type": "request",
+      "parentId": "fld_health_and_version",
+      "name": "Healthcheck",
+      "method": "GET",
+      "url": "{{ _.base_url }}/healthcheck",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -2
+    },
+    {
+      "_id": "req_version",
+      "_type": "request",
+      "parentId": "fld_health_and_version",
+      "name": "Version",
+      "method": "GET",
+      "url": "{{ _.base_url }}/version",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1
+    }
+  ]
+}
